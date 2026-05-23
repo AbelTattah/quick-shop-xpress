@@ -47,13 +47,6 @@ function subscribe(key: string, cb: () => void) {
 export function getCart(): CartState {
   return read<CartState>(CART_KEY, { merchant_id: null, lines: [] });
 }
-export function useCart(): CartState {
-  return useSyncExternalStore(
-    (cb) => subscribe(CART_KEY, cb),
-    () => JSON.stringify(getCart()),
-    () => JSON.stringify({ merchant_id: null, lines: [] }),
-  ) as unknown as CartState && getCart();
-}
 
 export function addToCart(item: Item, qty = 1): { replaced: boolean } {
   const cart = getCart();
