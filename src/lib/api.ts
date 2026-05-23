@@ -1,5 +1,21 @@
 export const API_BASE = "https://api-hackathon.codedematrixtech.com";
 
+// When building/prerendering we may want to avoid calling the real API
+// (unstable or private). Set PRERENDER_USE_FIXTURES=true in the build
+// environment to use lightweight fixtures instead.
+const USE_FIXTURES = (process.env.PRERENDER_USE_FIXTURES ?? process.env.VITE_PRERENDER_USE_FIXTURES) === "true" ||
+  (process.env.PRERENDER_USE_FIXTURES ?? process.env.VITE_PRERENDER_USE_FIXTURES) === "1";
+
+const FIXTURE_MERCHANTS: Merchant[] = [
+  { id: "m1", name: "Aduke Designs", whatsapp_number: "+233201724957" },
+  { id: "m2", name: "Kente House", whatsapp_number: "+233201724958" },
+];
+
+const FIXTURE_ITEMS: Item[] = [
+  { id: "rt-kaftan-maroon", merchant_id: "m1", name: "Maroon Kaftan", price_minor: 12000, currency: "GHS", image_urls: ["/white-agbada.jpg"], in_stock: true },
+  { id: "blue-shirt", merchant_id: "m2", name: "Blue Shirt", price_minor: 8000, currency: "GHS", image_urls: ["/blue-shirt.jpg"], in_stock: true },
+];
+
 export type Merchant = {
   id: string;
   name: string;
@@ -97,10 +113,22 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  listMerchants: () => req<Merchant[]>("/merchants"),
-  getMerchant: (slug: string) => req<Merchant>(`/merchants/${slug}`),
-  listMerchantItems: (slug: string) => req<Item[]>(`/merchants/${slug}/items`),
-  getItem: (id: string) => req<Item>(`/items/${id}`),
+  listMerchants: () => {
+    if (USE_FIXTURES) return Promise.resolve(FIXTURE_MERCHANTS);
+    return req<Merchant[]>('/merchants');
+  },
+  getMerchant: (slug: string) => {
+    if (USE_FIXTURES) return Promise.resolve(FIXTURE_MERCHANTS.find((m) => m.id === slug) as Merchant);
+    return req<Merchant>(`/merchants/${slug}`);
+  },
+  listMerchantItems: (slug: string) => {
+    if (USE_FIXTURES) return Promise.resolve(FIXTURE_ITEMS.filter((it) => it.merchant_id === slug));
+    return req<Item[]>(`/merchants/${slug}/items`);
+  },
+  getItem: (id: string) => {
+    if (USE_FIXTURES) return Promise.resolve(FIXTURE_ITEMS.find((i) => i.id === id) as Item);
+    return req<Item>(`/items/${id}`);
+  },
   createBasket: (body: {
     merchant_id: string;
     items: { item_id: string; qty: number; item_note?: string }[];
