@@ -36,25 +36,53 @@ function Index() {
 
   return (
     <div className="space-y-10">
-      {/* Hero */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/95 via-primary to-[oklch(0.5_0.16_25)] p-6 text-primary-foreground md:p-10 bg-grain">
-        <div className="grid gap-6 md:grid-cols-[1.2fr,1fr] md:items-center md:gap-10">
-          <div className="relative z-20">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur">
-              <Sparkles className="h-3.5 w-3.5" /> New: shop, chat, checkout — all on WhatsApp
-            </div>
-            <h1 className="mt-4 font-display text-4xl leading-[1.05] tracking-tight md:text-6xl text-foreground">
-              Tap. Add.<br /> Send on <span className="italic">WhatsApp.</span>
-            </h1>
-            <p className="mt-3 max-w-md text-sm text-foreground md:text-base z-20">
-              Hand-crafted West African fashion from independent tailors. No accounts, no checkout forms — just a message.
-            </p>
-            <div className="mt-4 max-w-md">
-              <SearchBar />
-            </div>
-
+      {/* Hero carousel */}
+      <section className="relative">
+        <div className="relative left-1/2 -translate-x-1/2 w-screen px-4 md:px-6">
+          <div className="mx-auto max-w-[1400px]">
+            <Carousel>
+              <CarouselContent>
+                {(trending.length > 0 ? trending.slice(0, 6) : []).map((it) => (
+                  <CarouselItem key={it.id}>
+                    <div className="flex flex-col md:flex-row h-80 md:h-[520px] w-full rounded-3xl overflow-hidden bg-card">
+                      <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center bg-gradient-to-r from-white/95 to-transparent">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-medium">
+                          <Sparkles className="h-3.5 w-3.5 text-primary" /> OOTD
+                        </div>
+                        <h3 className="mt-4 text-2xl md:text-4xl font-display text-foreground">{it.name}</h3>
+                        <p className="mt-2 text-lg text-muted-foreground">{formatPrice(it.price_minor, it.currency)}</p>
+                        <p className="mt-4 max-w-md text-sm text-muted-foreground">Hand-crafted piece by independent tailors — tap to message and order.</p>
+                        <div className="mt-6">
+                          <Link to="/items/$itemId" params={{ itemId: it.id }} className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm text-white">
+                            Shop
+                          </Link>
+                        </div>
+                      </div>
+                      <div className="w-full md:w-1/2 relative flex items-center justify-center bg-muted">
+                        <img src={resolveImage(it.image_urls?.[0]) ?? "/blue-shirt.jpg"} alt={it.name} className="w-full h-full object-contain" />
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+                {trending.length === 0 && (
+                  <CarouselItem>
+                    <div className="relative h-80 md:h-[520px] w-full rounded-3xl overflow-hidden bg-muted">
+                      <img src="/blue-shirt.jpg" alt="featured" className="w-full h-full object-cover object-top" />
+                    </div>
+                  </CarouselItem>
+                )}
+              </CarouselContent>
+              <div className="absolute left-6 top-1/2 z-30 -translate-y-1/2">
+                <CarouselPrevious />
+              </div>
+              <div className="absolute right-6 top-1/2 z-30 -translate-y-1/2">
+                <CarouselNext />
+              </div>
+            </Carousel>
           </div>
-
+        </div>
+        <div className="mt-6 px-4 md:px-6">
+          <SearchBar />
         </div>
       </section>
 

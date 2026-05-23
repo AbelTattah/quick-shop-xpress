@@ -34,7 +34,7 @@ export function ProductCard({ item }: { item: Item }) {
       className="group relative block overflow-hidden bg-card shadow-soft transition-transform hover:-translate-y-0.5"
     >
       <div className="relative aspect-square overflow-hidden bg-muted">
-        <ProductImage src={item.image_urls?.[0]} name={item.name} className="h-full w-full" rounded="" />
+        <ProductImage src={`https://api-hackathon.codedematrixtech.com${item.image_urls?.[0]}`} name={item.name} className="h-full w-full" rounded="" />
         <button
           onClick={handleWish}
           aria-label={wished ? "Remove from wishlist" : "Add to wishlist"}

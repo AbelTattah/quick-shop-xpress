@@ -12,11 +12,10 @@ export function useAllItems() {
     queryKey: ["all-items"],
     queryFn: async () => {
       try {
-        const merchants = await api.listMerchants();
-        const lists = await Promise.all(
-          merchants.map((m) => api.listMerchantItems(m.id).catch(() => [] as Item[])),
-        );
-        return lists.flat();
+        // Focus the initial items pipeline on the `mensah` merchant only
+        // to avoid pulling images/paths from other shops (e.g. rashida-tailors).
+        const items = await api.listMerchantItems("mensah").catch(() => [] as Item[]);
+        return items;
       } catch (err) {
         // If the API is unavailable during prerender, return an empty list
         // so prerender can continue producing static pages.
