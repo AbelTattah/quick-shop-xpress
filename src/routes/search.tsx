@@ -38,8 +38,8 @@ function SearchPage() {
     return list;
   }, [itemsQ.data, q, merchant, sort, inStock]);
 
-  const update = (patch: Partial<{ q: string; merchant: string; sort: string; inStock: boolean }>) =>
-    navigate({ search: (prev) => ({ ...prev, ...patch }) as never });
+  const update = (patch: Record<string, unknown>) =>
+    navigate({ search: (prev: Record<string, unknown>) => ({ ...prev, ...patch }) as never });
 
   return (
     <div className="space-y-5">
