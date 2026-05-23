@@ -113,29 +113,6 @@ function Index() {
           </div>
         )}
       </Section>
-
-      {/* Merchants */}
-      <Section title="Shop the makers" hint="Independent designers, direct prices">
-        <HScroll>
-          {(merchantsQ.data ?? []).map((m) => (
-            <Link
-              key={m.id}
-              to="/merchants/$slug"
-              params={{ slug: m.id }}
-              className="w-64 shrink-0 snap-start overflow-hidden rounded-2xl bg-card p-4 shadow-soft transition hover:-translate-y-0.5"
-            >
-              <div className="flex items-center gap-3">
-                <ProductImage src={m.logo_url} name={m.name} className="h-12 w-12" rounded="rounded-full" />
-                <div className="min-w-0">
-                  <p className="truncate font-display text-lg">{m.name}</p>
-                  <p className="text-[11px] text-muted-foreground">{m.whatsapp_number ? "WhatsApp ready" : "Coming soon"}</p>
-                </div>
-              </div>
-              {m.description && <p className="mt-3 line-clamp-2 text-xs text-muted-foreground">{m.description}</p>}
-            </Link>
-          ))}
-        </HScroll>
-      </Section>
     </div>
   );
 }
