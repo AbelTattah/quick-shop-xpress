@@ -66,7 +66,27 @@ function CartPage() {
       window.open(waUrl, "_blank");
       navigate({ to: "/thank-you/$basketId", params: { basketId: id } });
     } catch (e) {
-      toast.error("Couldn't create your order", { description: (e as Error).message });
+      const errMsg = (e as Error)?.message ?? String(e);
+      // Attempt to detect API 422 items_unavailable and fall back to opening WhatsApp
+      try {
+        if (errMsg.startsWith("API 422")) {
+          const jsonPart = errMsg.replace(/^API 422:\s*/, "");
+          const parsed = JSON.parse(jsonPart);
+          if (parsed?.error === "items_unavailable") {
+            const lines = cart.lines.map((l) => `• ${l.qty} × ${l.snapshot.name} — ${formatPrice(l.snapshot.price_minor * l.qty, l.snapshot.currency)}`).join("\n");
+            const fallbackMsg = `Hi, I couldn't create my order via the app because some items are out of stock: ${parsed.message || ''}\n\nI'd like to order:\n${lines}\n\nTotal: ${formatPrice(total, currency)}\n${name ? `Name: ${name}\n` : ''}${phone ? `Phone: ${phone}\n` : ''}${note ? `Note: ${note}\n` : ''}`;
+            const fallbackNumber = "0201724957"; // user's provided WhatsApp number
+            const waUrl = `https://wa.me/${fallbackNumber}?text=${encodeURIComponent(fallbackMsg)}`;
+            window.open(waUrl, "_blank");
+            toast.success("Opened WhatsApp — some items unavailable, please confirm with the shop");
+            return;
+          }
+        }
+      } catch (parseErr) {
+        // fall through to generic error
+      }
+
+      toast.error("Couldn't create your order", { description: errMsg });
     } finally {
       setSubmitting(false);
     }

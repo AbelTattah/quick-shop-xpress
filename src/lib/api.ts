@@ -80,8 +80,14 @@ export const api = {
 // be reachable; render a tasteful placeholder when loading fails.
 export function resolveImage(url?: string | null): string | undefined {
   if (!url) return undefined;
-  if (url.startsWith("http")) return url;
-  return `${API_BASE}${url}`;
+  const trimmed = url.trim();
+  // Absolute URLs (http/https)
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  // Protocol-relative URLs (//cdn.example.com/...)
+  if (trimmed.startsWith("//")) return `https:${trimmed}`;
+  // Ensure there's a single slash between API_BASE and the path
+  if (trimmed.startsWith("/")) return `${API_BASE}${trimmed}`;
+  return `${API_BASE}/${trimmed}`;
 }
 
 export function formatPrice(minor: number, currency = "GHS"): string {

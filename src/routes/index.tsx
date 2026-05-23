@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Sparkles, Store, MessageCircle } from "lucide-react";
-import { api, formatPrice, type Item } from "@/lib/api";
+import { api, formatPrice, type Item, resolveImage } from "@/lib/api";
 import { SearchBar, useAllItems } from "@/components/SearchBar";
 import { ProductCard } from "@/components/ProductCard";
 import { ProductImage } from "@/components/ProductImage";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { getRecent, useStoreVersion } from "@/lib/store";
 
 export const Route = createFileRoute("/")({ component: Index });
@@ -17,55 +18,33 @@ function Index() {
 
   const trending: Item[] = (itemsQ.data ?? []).slice(0, 8);
   const featured = (itemsQ.data ?? []).find((i) => i.in_stock) ?? (itemsQ.data ?? [])[0];
+  // Prefer API-hosted images for the hero carousel; fall back to public images.
+  const carouselSources = (trending.length > 0
+    ? trending.slice(0, 6).map((it) => resolveImage(it.image_urls?.[0]) ?? "/blue-shirt.jpg")
+    : ["/blue-shirt.jpg", "/white-agbada.jpg"]);
 
   return (
     <div className="space-y-10">
       {/* Hero */}
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/95 via-primary to-[oklch(0.5_0.16_25)] p-6 text-primary-foreground md:p-10 bg-grain">
         <div className="grid gap-6 md:grid-cols-[1.2fr,1fr] md:items-center md:gap-10">
-          <div>
+          <div className="relative z-20">
             <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur">
               <Sparkles className="h-3.5 w-3.5" /> New: shop, chat, checkout — all on WhatsApp
             </div>
-            <h1 className="mt-4 font-display text-4xl leading-[1.05] tracking-tight md:text-6xl">
+            <h1 className="mt-4 font-display text-4xl leading-[1.05] tracking-tight md:text-6xl text-foreground">
               Tap. Add.<br /> Send on <span className="italic">WhatsApp.</span>
             </h1>
-            <p className="mt-3 max-w-md text-sm text-primary-foreground/85 md:text-base">
+            <p className="mt-3 max-w-md text-sm text-foreground md:text-base z-20">
               Hand-crafted West African fashion from independent tailors. No accounts, no checkout forms — just a message.
             </p>
-            <div className="mt-6 max-w-md">
+            <div className="mt-4 max-w-md">
               <SearchBar />
             </div>
-            <div className="mt-4 flex flex-wrap gap-2 text-xs">
-              {["Agbada", "Kaftan", "Ankara", "Senator", "Kente"].map((t) => (
-                <Link key={t} to="/search" search={{ q: t }} className="rounded-full bg-white/12 px-3 py-1 backdrop-blur transition hover:bg-white/20">
-                  {t}
-                </Link>
-              ))}
-            </div>
+
           </div>
 
-          {featured && (
-            <Link to="/items/$itemId" params={{ itemId: featured.id }} className="group relative hidden overflow-hidden rounded-2xl bg-cream/90 p-3 text-foreground shadow-pop md:block">
-              <ProductImage src={featured.image_urls?.[0]} name={featured.name} className="aspect-[4/5] w-full" rounded="rounded-xl" />
-              <div className="flex items-end justify-between p-3">
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Editor's pick</p>
-                  <p className="mt-1 font-display text-xl">{featured.name}</p>
-                  <p className="text-primary font-semibold">{formatPrice(featured.price_minor, featured.currency)}</p>
-                </div>
-                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </div>
-            </Link>
-          )}
         </div>
-      </section>
-
-      {/* Value props */}
-      <section className="grid gap-3 sm:grid-cols-3">
-        <ValueProp icon={<MessageCircle className="h-5 w-5" />} title="WhatsApp checkout" body="One tap → your basket lands in the seller's chat." />
-        <ValueProp icon={<Sparkles className="h-5 w-5" />} title="Instant search" body="Type and find — across every shop in the market." />
-        <ValueProp icon={<Store className="h-5 w-5" />} title="Real makers" body="Bespoke tailoring from independent African designers." />
       </section>
 
       {/* Recently viewed */}

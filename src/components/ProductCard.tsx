@@ -31,7 +31,7 @@ export function ProductCard({ item }: { item: Item }) {
     <Link
       to="/items/$itemId"
       params={{ itemId: item.id }}
-      className="group relative block overflow-hidden rounded-2xl bg-card shadow-soft transition-transform hover:-translate-y-0.5"
+      className="group relative block overflow-hidden bg-card shadow-soft transition-transform hover:-translate-y-0.5"
     >
       <div className="relative aspect-square overflow-hidden bg-muted">
         <ProductImage src={item.image_urls?.[0]} name={item.name} className="h-full w-full" rounded="" />
