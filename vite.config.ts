@@ -9,14 +9,14 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
 // @cloudflare/vite-plugin builds from this — wrangler.jsonc main alone is insufficient.
 export default defineConfig({
+  // Disable @cloudflare/vite-plugin: it conflicts with TanStack Start's prerender
+  // server in Vercel's Node 24 build environment, causing "Internal Server Error"
+  // when the prerender phase tries to fetch "/".
+  cloudflare: false,
   tanstackStart: {
     server: { entry: "server" },
-    // Prerender only "/" to generate the index.html Vercel needs to serve the SPA.
-    // crawlLinks is OFF to avoid the internal server import error on Vercel.
-    // The real API is never called during prerender because:
-    //   1. merchants queryFn has a try/catch that returns [] on error.
-    //   2. Set PRERENDER_USE_FIXTURES=true in Vercel env vars as an extra guard.
-    // All other routes use the SPA fallback rewrite in vercel.json.
+    // Prerender only "/" (no crawling) to generate the index.html Vercel needs.
+    // All other routes are served via the SPA fallback rewrite in vercel.json.
     prerender: {
       enabled: true,
       crawlLinks: false,
