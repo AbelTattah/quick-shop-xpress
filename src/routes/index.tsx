@@ -13,7 +13,18 @@ export const Route = createFileRoute("/")({ component: Index });
 function Index() {
   useStoreVersion();
   const recent = getRecent();
-  const merchantsQ = useQuery({ queryKey: ["merchants"], queryFn: api.listMerchants, staleTime: 60_000 });
+  const merchantsQ = useQuery({
+    queryKey: ["merchants"],
+    queryFn: async () => {
+      try {
+        return await api.listMerchants();
+      } catch {
+        // Allow prerender to continue when the API is down.
+        return [] as { id: string; name: string; logo_url?: string | null; whatsapp_number?: string | null }[];
+      }
+    },
+    staleTime: 60_000,
+  });
   const itemsQ = useAllItems();
 
   const trending: Item[] = (itemsQ.data ?? []).slice(0, 8);

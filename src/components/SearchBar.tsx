@@ -11,11 +11,17 @@ export function useAllItems() {
   return useQuery({
     queryKey: ["all-items"],
     queryFn: async () => {
-      const merchants = await api.listMerchants();
-      const lists = await Promise.all(
-        merchants.map((m) => api.listMerchantItems(m.id).catch(() => [] as Item[])),
-      );
-      return lists.flat();
+      try {
+        const merchants = await api.listMerchants();
+        const lists = await Promise.all(
+          merchants.map((m) => api.listMerchantItems(m.id).catch(() => [] as Item[])),
+        );
+        return lists.flat();
+      } catch (err) {
+        // If the API is unavailable during prerender, return an empty list
+        // so prerender can continue producing static pages.
+        return [] as Item[];
+      }
     },
     staleTime: 60_000,
   });
