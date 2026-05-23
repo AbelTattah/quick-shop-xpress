@@ -53,12 +53,47 @@ export type Basket = {
 };
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...init,
-    headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
-  });
-  if (!res.ok) throw new Error(`API ${res.status}: ${await res.text().catch(() => res.statusText)}`);
-  return res.json() as Promise<T>;
+  const url = `${API_BASE}${path}`;
+  const maxRetries = 3;
+  let attempt = 0;
+  while (true) {
+    try {
+      const res = await fetch(url, {
+        ...init,
+        headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+      });
+
+      if (res.ok) {
+        // Try to parse JSON; let the caller handle structure errors
+        return (await res.json()) as T;
+      }
+
+      const text = await res.text().catch(() => res.statusText || "");
+      // Log details to help diagnose build-time prerender failures
+      console.error(`API request failed ${res.status} ${res.statusText} -> ${url}`);
+      if (text) console.error(`API response body: ${text}`);
+
+      // Retry on server errors (5xx). For client errors (4xx) don't retry.
+      if (res.status >= 500 && attempt < maxRetries - 1) {
+        attempt++;
+        const backoff = 200 * Math.pow(2, attempt);
+        await new Promise((r) => setTimeout(r, backoff));
+        continue;
+      }
+
+      throw new Error(`API ${res.status}: ${text || res.statusText}`);
+    } catch (err) {
+      // Network or other fetch-level errors
+      console.error(`API fetch error on ${url}:`, err instanceof Error ? err.message : String(err));
+      if (attempt < maxRetries - 1) {
+        attempt++;
+        const backoff = 200 * Math.pow(2, attempt);
+        await new Promise((r) => setTimeout(r, backoff));
+        continue;
+      }
+      throw err;
+    }
+  }
 }
 
 export const api = {
