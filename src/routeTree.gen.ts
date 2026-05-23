@@ -9,38 +9,161 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as TrackRouteImport } from './routes/track'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ThankYouBasketIdRouteImport } from './routes/thank-you.$basketId'
+import { Route as MerchantsSlugRouteImport } from './routes/merchants.$slug'
+import { Route as ItemsItemIdRouteImport } from './routes/items.$itemId'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackRoute = TrackRouteImport.update({
+  id: '/track',
+  path: '/track',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ThankYouBasketIdRoute = ThankYouBasketIdRouteImport.update({
+  id: '/thank-you/$basketId',
+  path: '/thank-you/$basketId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MerchantsSlugRoute = MerchantsSlugRouteImport.update({
+  id: '/merchants/$slug',
+  path: '/merchants/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ItemsItemIdRoute = ItemsItemIdRouteImport.update({
+  id: '/items/$itemId',
+  path: '/items/$itemId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/search': typeof SearchRoute
+  '/track': typeof TrackRoute
+  '/wishlist': typeof WishlistRoute
+  '/items/$itemId': typeof ItemsItemIdRoute
+  '/merchants/$slug': typeof MerchantsSlugRoute
+  '/thank-you/$basketId': typeof ThankYouBasketIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/search': typeof SearchRoute
+  '/track': typeof TrackRoute
+  '/wishlist': typeof WishlistRoute
+  '/items/$itemId': typeof ItemsItemIdRoute
+  '/merchants/$slug': typeof MerchantsSlugRoute
+  '/thank-you/$basketId': typeof ThankYouBasketIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cart': typeof CartRoute
+  '/search': typeof SearchRoute
+  '/track': typeof TrackRoute
+  '/wishlist': typeof WishlistRoute
+  '/items/$itemId': typeof ItemsItemIdRoute
+  '/merchants/$slug': typeof MerchantsSlugRoute
+  '/thank-you/$basketId': typeof ThankYouBasketIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/cart'
+    | '/search'
+    | '/track'
+    | '/wishlist'
+    | '/items/$itemId'
+    | '/merchants/$slug'
+    | '/thank-you/$basketId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/cart'
+    | '/search'
+    | '/track'
+    | '/wishlist'
+    | '/items/$itemId'
+    | '/merchants/$slug'
+    | '/thank-you/$basketId'
+  id:
+    | '__root__'
+    | '/'
+    | '/cart'
+    | '/search'
+    | '/track'
+    | '/wishlist'
+    | '/items/$itemId'
+    | '/merchants/$slug'
+    | '/thank-you/$basketId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CartRoute: typeof CartRoute
+  SearchRoute: typeof SearchRoute
+  TrackRoute: typeof TrackRoute
+  WishlistRoute: typeof WishlistRoute
+  ItemsItemIdRoute: typeof ItemsItemIdRoute
+  MerchantsSlugRoute: typeof MerchantsSlugRoute
+  ThankYouBasketIdRoute: typeof ThankYouBasketIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/track': {
+      id: '/track'
+      path: '/track'
+      fullPath: '/track'
+      preLoaderRoute: typeof TrackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +171,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/thank-you/$basketId': {
+      id: '/thank-you/$basketId'
+      path: '/thank-you/$basketId'
+      fullPath: '/thank-you/$basketId'
+      preLoaderRoute: typeof ThankYouBasketIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/merchants/$slug': {
+      id: '/merchants/$slug'
+      path: '/merchants/$slug'
+      fullPath: '/merchants/$slug'
+      preLoaderRoute: typeof MerchantsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/items/$itemId': {
+      id: '/items/$itemId'
+      path: '/items/$itemId'
+      fullPath: '/items/$itemId'
+      preLoaderRoute: typeof ItemsItemIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CartRoute: CartRoute,
+  SearchRoute: SearchRoute,
+  TrackRoute: TrackRoute,
+  WishlistRoute: WishlistRoute,
+  ItemsItemIdRoute: ItemsItemIdRoute,
+  MerchantsSlugRoute: MerchantsSlugRoute,
+  ThankYouBasketIdRoute: ThankYouBasketIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
