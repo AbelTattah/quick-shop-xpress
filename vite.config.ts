@@ -11,5 +11,11 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
+    // Enable static prerender target for TanStack Start so Vercel receives
+    // plain HTML/CSS/JS in `dist/client` (required for static hosting).
+    prerender: {
+      enabled: true,
+      crawlLinks: true,
+    },
   },
 });
