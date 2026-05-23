@@ -11,15 +11,9 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
-    // Prerender only known static routes — crawlLinks is disabled because it
-    // requires importing dist/server/server.js at build time, which Vercel's
-    // static build environment cannot resolve (ERR_MODULE_NOT_FOUND).
-    // Dynamic routes (/:itemId, /:slug, etc.) are served client-side via the
-    // SPA fallback rewrite in vercel.json.
-    prerender: {
-      enabled: true,
-      crawlLinks: false,
-      routes: ["/", "/search", "/cart", "/wishlist", "/track"],
-    },
+    // Prerendering is disabled: even with crawlLinks:false, TanStack Start still
+    // boots an internal server to fetch explicit routes — that server returns 500
+    // inside Vercel's build sandbox (ERR_MODULE_NOT_FOUND / Internal Server Error).
+    // All routing is handled client-side via the SPA fallback rewrite in vercel.json.
   },
 });
